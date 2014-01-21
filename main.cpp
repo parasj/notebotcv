@@ -95,7 +95,8 @@ Handle<Value> HoughLines(const Arguments& args)
 
 	// cv::waitKey();
 
-	cv::imwrite(*v8::String::Utf8Value(args[1]->ToString()), cdst);
+	// cv::imwrite(*v8::String::Utf8Value(args[1]->ToString()), cdst);
+	cv::imwrite(*v8::String::Utf8Value(args[1]->ToString()), dst );
 
 	return scope.Close(String::New(*v8::String::Utf8Value(args[1]->ToString())));
 }
