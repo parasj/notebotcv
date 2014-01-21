@@ -53,7 +53,8 @@ Handle<Value> Add(const Arguments& args)
 	return scope.Close(num);
 }
 
-Handle<Value> ReadImage(const Arguments& args)
+// call houghLines("filein.png", "fileout.png")
+Handle<Value> HoughLines(const Arguments& args)
 {
 	HandleScope scope;
 
@@ -104,7 +105,7 @@ void RegisterModule(Handle<Object> target)
 	// target is the module object you see when require()ing the .node file.
 	target->Set(String::NewSymbol("buildInformation"), FunctionTemplate::New(buildInformation)->GetFunction());
 	target->Set(String::NewSymbol("add"), FunctionTemplate::New(Add)->GetFunction());
-	target->Set(String::NewSymbol("readImage"), FunctionTemplate::New(ReadImage)->GetFunction());
+	target->Set(String::NewSymbol("houghLines"), FunctionTemplate::New(ReadImage)->GetFunction());
 }
  
 NODE_MODULE(nodebotcv, RegisterModule);
