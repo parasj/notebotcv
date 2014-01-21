@@ -105,7 +105,7 @@ void RegisterModule(Handle<Object> target)
 	// target is the module object you see when require()ing the .node file.
 	target->Set(String::NewSymbol("buildInformation"), FunctionTemplate::New(buildInformation)->GetFunction());
 	target->Set(String::NewSymbol("add"), FunctionTemplate::New(Add)->GetFunction());
-	target->Set(String::NewSymbol("houghLines"), FunctionTemplate::New(ReadImage)->GetFunction());
+	target->Set(String::NewSymbol("houghLines"), FunctionTemplate::New(HoughLines)->GetFunction());
 }
  
 NODE_MODULE(nodebotcv, RegisterModule);
