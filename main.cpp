@@ -56,29 +56,45 @@ Handle<Value> Add(const Arguments& args)
 Handle<Value> ReadImage(const Arguments& args)
 {
 	HandleScope scope;
- 
-	if (args.Length() < 1) {
-	  ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
-	  return scope.Close(Undefined());
-	}
 
-	// if (!args[0]->IsString()) {
-	//   ThrowException(Exception::TypeError(String::New("Wrong arguments")));
-	//   return scope.Close(Undefined());
-	// }
+	cv::Mat src = cv::imread(*v8::String::Utf8Value(args[0]->ToString()), 0);
 
+	cv::Mat dst, cdst;
+	cv::Canny(src, dst, 50, 200, 3);
+	// cv::cvtColor(dst, cdst, cv::CV_GRAY2BGR, 1);
+	cdst = dst;
 
-	cv::Mat image = cv::imread(*v8::String::Utf8Value(args[0]->ToString()), CV_LOAD_IMAGE_GRAYSCALE);
-	// image = image > 128;
+	#if 0
+	 std::vector<Vec2f> lines;
+	 cv::HoughLines(dst, lines, 1, CV_PI/180, 100, 0, 0 );
 
-	cv::imwrite(*v8::String::Utf8Value(args[1]->ToString()), image );
+	 for( size_t i = 0; i < lines.size(); i++ )
+	 {
+	    float rho = lines[i][0], theta = lines[i][1];
+	    Point pt1, pt2;
+	    double a = cos(theta), b = sin(theta);
+	    double x0 = a*rho, y0 = b*rho;
+	    pt1.x = cvRound(x0 + 1000*(-b));
+	    pt1.y = cvRound(y0 + 1000*(a));
+	    pt2.x = cvRound(x0 - 1000*(-b));
+	    pt2.y = cvRound(y0 - 1000*(a));
+	    line( cdst, pt1, pt2, Scalar(0,0,255), 3, CV_AA);
+	 }
+	#else
+	 std::vector<cv::Vec4i> lines;
+	 cv::HoughLinesP(dst, lines, 1, CV_PI/180, 50, 50, 10 );
+	 for( size_t i = 0; i < lines.size(); i++ )
+	 {
+	   cv::Vec4i l = lines[i];
+	   cv::line( cdst, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), cv::Scalar(0,0,255), 3, CV_AA);
+	 }
+	#endif
+	// cv::imshow("source", src);
+	// cv::imshow("detected lines", cdst);
 
-	cv::namedWindow( "Image", CV_WINDOW_AUTOSIZE );
-	cv::namedWindow( "GrayImage", CV_WINDOW_AUTOSIZE );
-	cv::imshow( "Image", image );
-	cv::imshow( "GrayImage", image > 50 );
+	// cv::waitKey();
 
-	cv::waitKey(0);
+	cv::imwrite(*v8::String::Utf8Value(args[1]->ToString()), cdst);
 
 	return scope.Close(String::New(*v8::String::Utf8Value(args[1]->ToString())));
 }
